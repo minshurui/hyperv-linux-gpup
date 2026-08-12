@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 - 2026-08-12
 
 - Initial open-source method package for Hyper-V Linux GPU-P with `dxgkrnl`.
 - Added host preflight and idempotent GPU-P/MMIO configuration with rollback state.
