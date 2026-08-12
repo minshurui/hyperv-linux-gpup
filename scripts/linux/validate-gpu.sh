@@ -3,7 +3,6 @@ set -euo pipefail
 
 fail=0
 pass() { printf '[PASS] %s\n' "$*"; }
-check() { if "$@"; then pass "$*"; else printf '[FAIL] %s\n' "$*"; fail=1; fi; }
 
 if [[ -e /dev/dxg ]]; then
     pass '/dev/dxg exists'
