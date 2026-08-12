@@ -1,0 +1,37 @@
+# Local state and backups
+state/
+artifacts/
+build/
+*.log
+*.bak
+*.before-*
+
+# Never commit extracted proprietary drivers or kernels
+wsl-driver*.tar*
+drivers/
+usr/lib/wsl/
+*.deb
+*.rpm
+vmlinuz-*
+initrd.img-*
+System.map-*
+*.ko
+*.vhd
+*.vhdx
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.pfx
+*.token
+secrets/
+rclone.conf
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

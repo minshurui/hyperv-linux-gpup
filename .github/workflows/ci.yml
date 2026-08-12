@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Bash and repository checks
+        run: bash tests/lint.sh
+      - name: PowerShell parser check
+        shell: pwsh
+        run: |
+          $failed = $false
+          Get-ChildItem scripts/windows -Filter *.ps1 | ForEach-Object {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors)
+            if ($errors.Count) {
+              $errors | ForEach-Object { Write-Error "$($_.Extent.File):$($_.Extent.StartLineNumber): $($_.Message)" }
+              $failed = $true
+            }
+          }
+          if ($failed) { exit 1 }
+      - name: Reject large or forbidden artifacts
+        run: |
+          if find . -type f -size +10M -not -path './.git/*' | grep -q .; then
+            echo 'Files larger than 10 MiB are not allowed:' >&2
+            find . -type f -size +10M -not -path './.git/*' >&2
+            exit 1
+          fi
+          if find . -type f \( -name '*.deb' -o -name '*.ko' -o -name '*.vhdx' -o -name 'wsl-driver*.tar*' \) | grep -q .; then
+            echo 'Compiled kernels, VM disks and driver archives must not be committed.' >&2
+            exit 1
+          fi

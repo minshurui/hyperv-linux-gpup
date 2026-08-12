@@ -1,0 +1,13 @@
+# Replace `emby` only if your Compose service has another name.
+services:
+  emby:
+    devices:
+      - /dev/dxg:/dev/dxg
+    volumes:
+      - /usr/lib/wsl/lib:/usr/lib/wsl/lib:ro
+      - /usr/lib/wsl/drivers:/usr/lib/wsl/drivers:ro
+    # Docker Compose does not expand subdirectories into LD_LIBRARY_PATH.
+    # Run scripts/linux/print-driver-env.sh and copy its output here when your
+    # application cannot find the versioned DriverStore libraries.
+    environment:
+      LD_LIBRARY_PATH: /usr/lib/wsl/lib:/lib:/usr/lib
