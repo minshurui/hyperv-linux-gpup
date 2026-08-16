@@ -32,6 +32,13 @@ FFmpeg / Emby NVDEC + NVENC
 - 本项目不承诺所有机器都能成功。先执行 preflight，再显式执行 Apply。
 - 定制内核不是 Debian 官方内核；它不会随着 Debian 内核更新自动获得安全修复。
 
+## 两条实现路线
+
+- **通用整内核路线**：适合普通 Debian/Ubuntu 客体，见下方快速流程。
+- **保留厂商内核的外部模块路线**：已在 fnOS `6.18.18.c952-trim` 上验证，避免替换内核导致厂商 RAID/存储初始化缺失。参见 [`docs/FNOS-6.18.md`](docs/FNOS-6.18.md)，使用 `build-dxg-module-6.18.sh`、精确 `Module.symvers` 预检以及可回滚安装脚本。
+
+外部模块路线仍是窄版本移植，不代表任意 WSL 源码和 Linux 6.18 内核均兼容。
+
 ## 快速流程
 
 ### 1. Windows 宿主机（管理员 PowerShell）

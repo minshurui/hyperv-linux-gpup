@@ -12,15 +12,28 @@ fi
 config="/boot/config-$(uname -r)"
 if [[ -r $config ]] && grep -q '^CONFIG_DXGKRNL=y' "$config"; then
     pass 'CONFIG_DXGKRNL=y'
+elif grep -q '^dxgkrnl ' /proc/modules; then
+    pass 'external dxgkrnl module is loaded'
 else
-    echo "[FAIL] $config lacks CONFIG_DXGKRNL=y"; fail=1
+    echo '[FAIL] neither built-in nor external dxgkrnl is active'; fail=1
 fi
 
-nvidia_smi=${NVIDIA_SMI:-/usr/local/bin/nvidia-smi}
+if [[ -n ${NVIDIA_SMI:-} ]]; then
+    nvidia_smi=$NVIDIA_SMI
+elif [[ -x /usr/local/bin/nvidia-smi ]]; then
+    nvidia_smi=/usr/local/bin/nvidia-smi
+else
+    nvidia_smi=/usr/lib/wsl/lib/nvidia-smi
+fi
+wsl_ld=/usr/lib/wsl/lib
+while IFS= read -r dir; do wsl_ld="$wsl_ld:$dir"; done < <(find /usr/lib/wsl/drivers -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
 if [[ -x $nvidia_smi ]]; then
-    LD_LIBRARY_PATH="/usr/lib/wsl/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "$nvidia_smi" \
-        --query-gpu=name,driver_version,memory.total --format=csv,noheader
-    pass 'nvidia-smi can query the GPU'
+    if timeout 20 env LD_LIBRARY_PATH="$wsl_ld${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "$nvidia_smi" \
+        --query-gpu=name,driver_version,memory.total --format=csv,noheader; then
+        pass 'nvidia-smi can query the GPU'
+    else
+        echo '[FAIL] nvidia-smi query failed or timed out'; fail=1
+    fi
 else
     echo "[FAIL] nvidia-smi not found: $nvidia_smi"; fail=1
 fi
@@ -43,7 +56,7 @@ fi
 
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
-if ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=1280x720:rate=30 -t 3 \
+if timeout 60 ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=1280x720:rate=30 -t 3 \
     -c:v h264_nvenc -f null -; then
     pass 'NVENC encode smoke test'
 else
@@ -51,9 +64,9 @@ else
 fi
 
 input="$work/input.mp4"
-if ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=1280x720:rate=30 -t 3 \
+if timeout 60 ffmpeg -hide_banner -loglevel error -f lavfi -i testsrc2=size=1280x720:rate=30 -t 3 \
     -c:v h264_nvenc -pix_fmt yuv420p "$input" &&
-   ffmpeg -hide_banner -loglevel error -hwaccel cuda -hwaccel_output_format cuda \
+   timeout 60 ffmpeg -hide_banner -loglevel error -hwaccel cuda -hwaccel_output_format cuda \
     -i "$input" -f null -; then
     pass 'NVDEC decode smoke test'
 else
