@@ -3,10 +3,13 @@
 ## After a Windows NVIDIA driver update
 
 1. Confirm `nvidia-smi` still works in WSL.
-2. Run `export-wsl-driver.sh` again in WSL.
+2. Preview `export-wsl-driver.sh`, then run it again with `--apply` in WSL.
 3. Validate the archive in the VM without `--apply`.
-4. Install with `--apply`; the old `/usr/lib/wsl` is retained with a timestamp.
+4. Install with `--apply`; the old `/usr/lib/wsl` and root-only rollback state are retained.
 5. Run `validate-gpu.sh` and `validate-emby-compose.sh`.
+6. Keep the rollback state until the new driver is accepted; use `rollback-wsl-driver.sh` (dry-run first) if restoration is required.
+
+See [WSL driver archive security](WSL-DRIVER-ARCHIVES.md) for the manifest schema, validation limits, and tests.
 
 Do not keep a DriverStore directory hash in a reusable script.
 
@@ -30,7 +33,9 @@ DXG kernel until the new version has survived a full reboot.
 
 - Windows GPU-P/MMIO state: `state/<VM>-gpup.json`
 - Previous WSL user-mode library tree: `/usr/lib/wsl.before-<timestamp>`
+- Explicit rollback state: `/var/lib/hyperv-linux-gpup/wsl-driver-rollback.json`
 - Failed new library tree: `/usr/lib/wsl.failed-<timestamp>` (when validation triggers rollback)
+- Explicitly rolled-back tree: `/usr/lib/wsl.rolled-back-<timestamp>`
 - Boot diagnostics: caller-selected `state/` directory
 
 These locations may contain machine inventory or proprietary binaries and are
