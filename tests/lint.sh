@@ -9,6 +9,11 @@ for script in "${scripts[@]}"; do
     bash -n "$script"
 done
 
+mapfile -t python_scripts < <(find scripts tests -type f -name '*.py' -print | sort)
+if ((${#python_scripts[@]})); then
+    python3 -m py_compile "${python_scripts[@]}"
+fi
+
 if command -v shellcheck >/dev/null 2>&1; then
     shellcheck -x "${scripts[@]}"
 else
@@ -28,4 +33,7 @@ for pattern in "${patterns[@]}"; do
     fi
 done
 
-echo "PASS: ${#scripts[@]} shell scripts checked; no forbidden secret pattern found."
+bash tests/test-wsl-driver-archive.sh
+bash tests/test-prepare-dxg-source.sh
+
+echo "PASS: ${#scripts[@]} shell scripts and ${#python_scripts[@]} Python scripts checked; no forbidden secret pattern found."

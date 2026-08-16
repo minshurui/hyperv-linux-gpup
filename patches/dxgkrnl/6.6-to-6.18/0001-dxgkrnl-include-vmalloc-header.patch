@@ -1,0 +1,13 @@
+From: hyperv-linux-gpup maintainers
+Subject: [PATCH 1/5] dxgkrnl: include vmalloc declarations explicitly
+
+--- a/drivers/hv/dxgkrnl/dxgkrnl.h
++++ b/drivers/hv/dxgkrnl/dxgkrnl.h
+@@ -15,6 +15,7 @@
+ #define _DXGKRNL_H
+ 
+ #include <linux/uuid.h>
++#include <linux/vmalloc.h>
+ #include <linux/kernel.h>
+ #include <linux/mutex.h>
+ #include <linux/semaphore.h>

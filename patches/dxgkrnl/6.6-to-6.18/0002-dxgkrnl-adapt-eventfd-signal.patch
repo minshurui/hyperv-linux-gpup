@@ -1,0 +1,14 @@
+From: hyperv-linux-gpup maintainers
+Subject: [PATCH 2/5] dxgkrnl: adapt eventfd_signal for Linux 6.18
+
+--- a/drivers/hv/dxgkrnl/dxgmodule.c
++++ b/drivers/hv/dxgkrnl/dxgmodule.c
+@@ -175,7 +175,7 @@ void signal_host_cpu_event(struct dxghostevent *eventhdr)
+ 	}
+ 	if (event->cpu_event) {
+ 		DXG_TRACE("signal cpu event");
+-		eventfd_signal(event->cpu_event, 1);
++		eventfd_signal(event->cpu_event);
+ 		if (event->destroy_after_signal)
+ 			eventfd_ctx_put(event->cpu_event);
+ 	} else {

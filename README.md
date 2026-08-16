@@ -37,7 +37,7 @@ FFmpeg / Emby NVDEC + NVENC
 - **通用整内核路线**：适合普通 Debian/Ubuntu 客体，见下方快速流程。
 - **保留厂商内核的外部模块路线**：已在 fnOS `6.18.18.c952-trim` 上验证，避免替换内核导致厂商 RAID/存储初始化缺失。参见 [`docs/FNOS-6.18.md`](docs/FNOS-6.18.md)，使用 `build-dxg-module-6.18.sh`、精确 `Module.symvers` 预检以及可回滚安装脚本。
 
-外部模块路线仍是窄版本移植，不代表任意 WSL 源码和 Linux 6.18 内核均兼容。
+外部模块路线仍是窄版本移植，只接受经哈希验证的 Microsoft tag `linux-msft-wsl-6.6.87.2`（commit `427645e3db3a8896714f22a3d3fe0c3f7b317ad4`），不代表任意 WSL 源码和 Linux 6.18 内核均兼容。完整支持边界与可复现来源记录见 [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md)。
 
 ## 快速流程
 
@@ -77,9 +77,11 @@ FFmpeg / Emby NVDEC + NVENC
 ```bash
 sudo ./scripts/linux/export-wsl-driver.sh \
   --output /mnt/c/Users/<you>/Downloads/wsl-nvidia-driver.tar.gz
+sudo ./scripts/linux/export-wsl-driver.sh \
+  --output /mnt/c/Users/<you>/Downloads/wsl-nvidia-driver.tar.gz --apply
 ```
 
-该脚本只从本机读取 `/usr/lib/wsl/lib` 和可匹配的 `/usr/lib/wsl/drivers` 子目录。生成的归档包含专有文件，**不要提交 GitHub**。
+导出默认仅预览，必须显式加 `--apply` 才会写归档。归档包含 `MANIFEST.json`、逐文件 SHA-256 和完整成员 allowlist。该脚本只从本机读取 `/usr/lib/wsl/lib` 和可匹配的 `/usr/lib/wsl/drivers` 子目录。生成的归档包含专有文件，**不要提交 GitHub**。安全格式、验证限制与威胁模型见 [`docs/WSL-DRIVER-ARCHIVES.md`](docs/WSL-DRIVER-ARCHIVES.md)。
 
 ### 3. Debian VM 安装依赖并编译
 
@@ -175,6 +177,13 @@ sudo ./scripts/linux/install-wsl-driver.sh \
 ```bash
 sudo ./scripts/linux/install-wsl-driver.sh \
   --archive /path/to/wsl-nvidia-driver.tar.gz --apply
+```
+
+安装会保留显式回滚记录；默认先预览，确认后恢复此前的驱动树：
+
+```bash
+sudo ./scripts/linux/rollback-wsl-driver.sh
+sudo ./scripts/linux/rollback-wsl-driver.sh --apply
 ```
 
 然后再次运行：

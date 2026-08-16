@@ -1,0 +1,5 @@
+0001-dxgkrnl-include-vmalloc-header.patch
+0002-dxgkrnl-adapt-eventfd-signal.patch
+0003-dxgkrnl-add-gpup-vmbus-guids.patch
+0004-dxgkrnl-adapt-dma-fence-api.patch
+0005-dxgkrnl-use-public-task-comm-api.patch

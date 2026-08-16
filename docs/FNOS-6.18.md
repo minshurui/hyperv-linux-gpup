@@ -8,7 +8,7 @@ This path keeps the vendor fnOS kernel and storage stack intact. It was tested w
 |---|---|
 | Guest | fnOS, Hyper-V Generation 1 |
 | Target kernel | `6.18.18.c952-trim` |
-| dxg source family | Microsoft WSL2 kernel 6.6 `drivers/hv/dxgkrnl` |
+| dxg source | `linux-msft-wsl-6.6.87.2` at `427645e3db3a8896714f22a3d3fe0c3f7b317ad4` |
 | Module mode | external `dxgkrnl.ko`, version 2.0.3 |
 | GPU | NVIDIA GeForce RTX 3070 Laptop GPU through GPU-P |
 | NVIDIA userspace | WSL libraries, driver 537.58 |
@@ -28,7 +28,7 @@ The reusable builder applies five source adaptations to a disposable copy:
 4. Adapt `__dma_fence_is_later()` and omit removed fence debug callbacks.
 5. Replace internal `__get_task_comm()` use with `get_task_comm()`.
 
-Every replacement is intentionally anchor-based. A changed upstream source should fail at compilation or preflight rather than be treated as compatible.
+The five changes are maintained as an ordered patch series. Source hashes, patch hashes, zero-fuzz application, and exact Makefile anchors are verified before build; a changed source fails preparation rather than being treated as compatible. See [COMPATIBILITY.md](COMPATIBILITY.md).
 
 ## Build without replacing the fnOS kernel
 
@@ -59,10 +59,12 @@ Do not substitute `/proc/kallsyms` for `Module.symvers`: a symbol visible in kal
 sudo ./scripts/linux/install-dxg-module.sh ./dxg-module-artifacts/dxgkrnl.ko
 sudo ./scripts/linux/install-dxg-module.sh ./dxg-module-artifacts/dxgkrnl.ko --apply
 sudo ./scripts/linux/rollback-dxg-module.sh
-sudo ./scripts/linux/rollback-dxg-module.sh --backup /var/lib/hyperv-linux-gpup/$(uname -r)/backups/<file> --apply
+sudo ./scripts/linux/rollback-dxg-module.sh --apply
+sudo ./scripts/linux/uninstall-dxg-module.sh
+sudo ./scripts/linux/uninstall-dxg-module.sh --apply
 ```
 
-The module is kernel-scoped. Installation is dry-run by default, preserves previous modules, uses an operation lock, and installs an idempotent service. Rollback refuses to unload while `/dev/dxg` has open users. Never force-unload the module.
+The module is kernel-scoped. Lifecycle operations are dry-run by default, share one lock, preserve immutable transaction snapshots, use same-filesystem atomic replacements, and automatically restore the captured module/loader/unit/service state on error. Stop failures are fatal, and the module must be confirmed unloaded before disk replacement. See [`DXG-MODULE-LIFECYCLE.md`](DXG-MODULE-LIFECYCLE.md) for rollback selection, safe uninstall, and fault-injection tests. Never force-unload the module.
 
 ## Acceptance ladder
 

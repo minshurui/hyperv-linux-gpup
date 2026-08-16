@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repository": "https://github.com/microsoft/WSL2-Linux-Kernel.git",
+    "tag": "linux-msft-wsl-6.6.87.2",
+    "commit": "427645e3db3a8896714f22a3d3fe0c3f7b317ad4",
+    "files": {
+      "drivers/hv/dxgkrnl/Makefile": "bfb9f00fd15d52265eea7dd89dc436ba6fc00e3ba9835241a8b100ad4ca3e743",
+      "drivers/hv/dxgkrnl/dxgkrnl.h": "b7328dd85b9192c688b7261209e0d56321e9b53e889a81b784822997ac95da7b",
+      "drivers/hv/dxgkrnl/dxgmodule.c": "4b78d821cf8859300bcdc5cb2b8bdba3fab770cfdf98b04c0aef536c5c83127b",
+      "drivers/hv/dxgkrnl/dxgsyncfile.c": "7d246aff4ba26469c2ab058f4708aa453890efd2a68696ff7c77a2fc730fd2f3",
+      "drivers/hv/dxgkrnl/dxgvmbus.c": "6365e8473d51b877f350217b56ed747cb2092b66aac64804ec8e0473b8911fb4",
+      "include/uapi/misc/d3dkmthk.h": "618c16dadff0e9a8203e3de3c972d1c365cc0328f2b536a1b82868cecc40f7aa"
+    }
+  },
+  "patch_series": {
+    "directory": "patches/dxgkrnl/6.6-to-6.18",
+    "series_sha256": "bf5e782836f89993442966c46b233574809701481d3cbc00781d2cc3e55d8c9a",
+    "patches": [
+      {"file": "0001-dxgkrnl-include-vmalloc-header.patch", "sha256": "c044e18c5a2c0342f038b60301d71855dedd7a2318621ec87a6189967e8e8f78"},
+      {"file": "0002-dxgkrnl-adapt-eventfd-signal.patch", "sha256": "b3e20d8150a3613ed6b0a2a1324587aa8aeb433861435222acc3afa061aac55a"},
+      {"file": "0003-dxgkrnl-add-gpup-vmbus-guids.patch", "sha256": "12ce4a5c58b6592b83c7410e65c805ea9d22c27290d96e355b1ed22230fd25a4"},
+      {"file": "0004-dxgkrnl-adapt-dma-fence-api.patch", "sha256": "81d12cba0a44c5d7a64e7d64709a1f35496b6c5c1f0f0f2bb427478c1c78d611"},
+      {"file": "0005-dxgkrnl-use-public-task-comm-api.patch", "sha256": "bf726a0f9ea821763889ab8aed43a2a1eeb344eceebdf2e82ebf9d2ec90196df"}
+    ]
+  },
+  "tested_target": {
+    "kernel_release": "6.18.18.c952-trim",
+    "module_mode": "external"
+  }
+}
