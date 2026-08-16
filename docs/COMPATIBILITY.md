@@ -37,7 +37,7 @@ Preparation performs these checks before publishing output:
 1. every required upstream file exists and matches its recorded SHA-256;
 2. when the source is a Git checkout, `HEAD` equals the recorded commit;
 3. `series` and each patch match the manifest and retain their exact order;
-4. all five patches apply with zero fuzz;
+4. all six patches apply with zero fuzz;
 5. the in-tree Makefile anchors each match exactly once.
 
 Any mismatch aborts. Existing output is never deleted or overwritten, and a
@@ -54,7 +54,8 @@ change per patch:
 2. use the Linux 6.18 one-argument `eventfd_signal()` API;
 3. provide the Microsoft GPU-P GLOBAL and VGPU VMBus GUID initializers when absent;
 4. adapt `__dma_fence_is_later()` and remove obsolete fence debug callbacks;
-5. replace internal `__get_task_comm()` with public `get_task_comm()`.
+5. replace internal `__get_task_comm()` with public `get_task_comm()`;
+6. use the mmap write lock for the VMA mutation and I/O remap in `dxg_map_iospace()`.
 
 The patches are source compatibility adaptations, not evidence of runtime
 compatibility by themselves. Build success also does not prove exact symbol

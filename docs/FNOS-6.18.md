@@ -20,15 +20,16 @@ This is a narrow compatibility result, not a claim that arbitrary WSL and 6.18 r
 
 ## Compatibility changes
 
-The reusable builder applies five source adaptations to a disposable copy:
+The reusable builder applies six source adaptations to a disposable copy:
 
 1. Include `<linux/vmalloc.h>` explicitly for `vfree`.
 2. Use the current one-argument `eventfd_signal()` call.
 3. Define the Microsoft GPU-P GLOBAL and VGPU VMBus GUIDs when the target headers do not provide them.
 4. Adapt `__dma_fence_is_later()` and omit removed fence debug callbacks.
 5. Replace internal `__get_task_comm()` use with `get_task_comm()`.
+6. Hold the mmap write lock while mutating a VMA and calling `io_remap_pfn_range()` in `dxg_map_iospace()`.
 
-The five changes are maintained as an ordered patch series. Source hashes, patch hashes, zero-fuzz application, and exact Makefile anchors are verified before build; a changed source fails preparation rather than being treated as compatible. See [COMPATIBILITY.md](COMPATIBILITY.md).
+The six changes are maintained as an ordered patch series. Source hashes, patch hashes, zero-fuzz application, and exact Makefile anchors are verified before build; a changed source fails preparation rather than being treated as compatible. See [COMPATIBILITY.md](COMPATIBILITY.md).
 
 ## Build without replacing the fnOS kernel
 
@@ -78,6 +79,32 @@ Treat each step as separate evidence:
 6. A controlled cold boot preserves the vendor kernel, storage, service, and application state.
 
 Steps 1–4 do not prove step 5. In particular, codec advertisement and standalone FFmpeg success are not media-application acceptance.
+
+### Tested fnOS Movies result
+
+On the tested system, fnOS Movies `mediasrv` 0.8.39 initially triggered
+`rwsem_assert_held_write_nolockdep()` from `remap_pfn_range_internal()` while
+creating paging queues and mappings. Patch 6 changed only the stale WSL 6.6
+mmap read lock to the write lock required by Linux 6.18. After rebuilding and
+transactionally switching the module:
+
+- standalone H.264 NVENC and CUVID/NVDEC completed with no new kernel warning;
+- the Movies API detected exactly one `NVIDIA GeForce RTX 3070 Laptop GPU`;
+- `mediasrv` logged `loaded nvenc api version 12.1`, `gpu in working`, and
+  `gpu enable: true, selected sequence: 1`;
+- a real Movies quality transcode opened `/dev/dxg` from a `mediasrv` child,
+  wrote new HLS segments under the configured transcode cache, and reached
+  100% encoder and 56% decoder utilization in `nvidia-smi dmon`;
+- MD RAID remained complete and Btrfs device error counters remained zero.
+
+The fnOS application still needed a process-scoped device-discovery adapter
+because GPU-P exposes `/dev/dxg` and a synthetic PCI function rather than the
+physical NVIDIA DRM/PCI topology expected by this closed-source version. That
+adapter renamed only the process-visible PCI directory identity, returned the
+NVIDIA vendor/device leaves, and resolved the exact DRM by-path names to
+`/dev/dxg`. It did not interpose CUDA, NVENC, `dlsym`, or capability return
+values, and it was never installed system-wide. This application-specific
+adapter is not part of the generic kernel module package.
 
 ## fnOS safety notes
 

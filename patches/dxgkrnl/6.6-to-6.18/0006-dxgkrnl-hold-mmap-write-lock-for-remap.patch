@@ -1,0 +1,31 @@
+From: hyperv-linux-gpup maintainers
+Subject: [PATCH 6/6] dxgkrnl: hold mmap write lock while remapping I/O space
+
+Linux 6.18 requires remap_pfn_range() callers to hold the mmap write lock.
+The imported WSL 6.6 dxgkrnl implementation only takes mmap_read_lock(), which
+triggers rwsem_assert_held_write_nolockdep() from remap_pfn_range_internal()
+during CUDA paging-queue and allocation mappings.
+
+Use the write-side lock around find_vma(), vm_pgoff mutation, and
+io_remap_pfn_range(). This also correctly serializes the direct VMA mutation.
+
+--- a/drivers/hv/dxgkrnl/dxgvmbus.c
++++ b/drivers/hv/dxgkrnl/dxgvmbus.c
+@@ -600,7 +600,7 @@ static u8 *dxg_map_iospace(u64 iospace_address, u32 size,
+ 		return NULL;
+ 	}
+ 
+-	mmap_read_lock(current->mm);
++	mmap_write_lock(current->mm);
+ 	vma = find_vma(current->mm, (unsigned long)va);
+ 	if (vma) {
+ 		pgprot_t prot = vma->vm_page_prot;
+@@ -618,7 +618,7 @@ static u8 *dxg_map_iospace(u64 iospace_address, u32 size,
+ 		DXG_ERR("failed to find vma: %p %lx", vma, va);
+ 		ret = -ENOMEM;
+ 	}
+-	mmap_read_unlock(current->mm);
++	mmap_write_unlock(current->mm);
+ 
+ 	if (ret) {
+ 		dxg_unmap_iospace((void *)va, size);

@@ -3,3 +3,4 @@
 0003-dxgkrnl-add-gpup-vmbus-guids.patch
 0004-dxgkrnl-adapt-dma-fence-api.patch
 0005-dxgkrnl-use-public-task-comm-api.patch
+0006-dxgkrnl-hold-mmap-write-lock-for-remap.patch

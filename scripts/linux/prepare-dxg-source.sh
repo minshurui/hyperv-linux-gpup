@@ -98,7 +98,10 @@ while IFS= read -r patch_name || [[ -n $patch_name ]]; do
         < "$patch_dir/$patch_name"
     ((patch_count += 1))
 done < "$series"
-[[ $patch_count -eq 5 ]] || { echo "Expected exactly 5 patches, found $patch_count" >&2; exit 1; }
+expected_patch_count=$(grep -Ec '^[^#[:space:]]' "$series")
+[[ $patch_count -eq $expected_patch_count ]] || {
+    echo "Expected $expected_patch_count patches, found $patch_count" >&2; exit 1;
+}
 
 module="$stage/drivers/hv/dxgkrnl"
 mkdir -p "$module/include/uapi/misc"

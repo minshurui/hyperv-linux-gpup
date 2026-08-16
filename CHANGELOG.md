@@ -6,6 +6,8 @@
 - Added a parameterized out-of-tree `dxgkrnl` 6.6-to-6.18 compatibility builder.
 - Added exact target `Module.symvers`/vermagic preflight and kernel-scoped dry-run installation and rollback.
 - Updated GPU validation for loaded external modules, WSL DriverStore paths, and bounded command timeouts.
+- Fixed Linux 6.18 `remap_pfn_range()` locking by using the mmap write lock in `dxg_map_iospace()`.
+- Recorded application-level fnOS Movies NVDEC/NVENC acceptance and the boundary of its process-scoped discovery adapter.
 
 ## 0.1.0 - 2026-08-12
 

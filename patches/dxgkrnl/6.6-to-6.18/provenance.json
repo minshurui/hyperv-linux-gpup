@@ -15,13 +15,14 @@
   },
   "patch_series": {
     "directory": "patches/dxgkrnl/6.6-to-6.18",
-    "series_sha256": "bf5e782836f89993442966c46b233574809701481d3cbc00781d2cc3e55d8c9a",
+    "series_sha256": "c0dbee4a5c2882c54ed65a82a3702a4129f195e77ba1fe888cc4e8a0b276730b",
     "patches": [
       {"file": "0001-dxgkrnl-include-vmalloc-header.patch", "sha256": "c044e18c5a2c0342f038b60301d71855dedd7a2318621ec87a6189967e8e8f78"},
       {"file": "0002-dxgkrnl-adapt-eventfd-signal.patch", "sha256": "b3e20d8150a3613ed6b0a2a1324587aa8aeb433861435222acc3afa061aac55a"},
       {"file": "0003-dxgkrnl-add-gpup-vmbus-guids.patch", "sha256": "12ce4a5c58b6592b83c7410e65c805ea9d22c27290d96e355b1ed22230fd25a4"},
       {"file": "0004-dxgkrnl-adapt-dma-fence-api.patch", "sha256": "81d12cba0a44c5d7a64e7d64709a1f35496b6c5c1f0f0f2bb427478c1c78d611"},
-      {"file": "0005-dxgkrnl-use-public-task-comm-api.patch", "sha256": "bf726a0f9ea821763889ab8aed43a2a1eeb344eceebdf2e82ebf9d2ec90196df"}
+      {"file": "0005-dxgkrnl-use-public-task-comm-api.patch", "sha256": "bf726a0f9ea821763889ab8aed43a2a1eeb344eceebdf2e82ebf9d2ec90196df"},
+      {"file": "0006-dxgkrnl-hold-mmap-write-lock-for-remap.patch", "sha256": "b848ecdb92fcabce0dc07abc78c7500ad0ef49a6219cae6d6781c1d773a4ac9f"}
     ]
   },
   "tested_target": {
