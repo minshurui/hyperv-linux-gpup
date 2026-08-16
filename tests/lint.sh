@@ -35,5 +35,6 @@ done
 
 bash tests/test-wsl-driver-archive.sh
 bash tests/test-prepare-dxg-source.sh
+bash tests/test-fnos-mediasrv-compat.sh
 
 echo "PASS: ${#scripts[@]} shell scripts and ${#python_scripts[@]} Python scripts checked; no forbidden secret pattern found."

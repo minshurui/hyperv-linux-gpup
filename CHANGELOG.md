@@ -7,7 +7,7 @@
 - Added exact target `Module.symvers`/vermagic preflight and kernel-scoped dry-run installation and rollback.
 - Updated GPU validation for loaded external modules, WSL DriverStore paths, and bounded command timeouts.
 - Fixed Linux 6.18 `remap_pfn_range()` locking by using the mmap write lock in `dxg_map_iospace()`.
-- Recorded application-level fnOS Movies NVDEC/NVENC acceptance and the boundary of its process-scoped discovery adapter.
+- Published the auditable, parameterized process-scoped fnOS Movies discovery adapter source, dry-run install/rollback scripts, and real NVENC/NVDEC/HLS acceptance procedure.
 
 ## 0.1.0 - 2026-08-12
 

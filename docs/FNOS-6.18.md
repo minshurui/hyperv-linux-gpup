@@ -104,7 +104,9 @@ adapter renamed only the process-visible PCI directory identity, returned the
 NVIDIA vendor/device leaves, and resolved the exact DRM by-path names to
 `/dev/dxg`. It did not interpose CUDA, NVENC, `dlsym`, or capability return
 values, and it was never installed system-wide. This application-specific
-adapter is not part of the generic kernel module package.
+adapter is not part of the generic kernel module package. Its auditable source,
+parameterized build, process-scoped install/rollback, and real Movies acceptance
+procedure are published separately in [FNOS-MOVIES.md](FNOS-MOVIES.md).
 
 ## fnOS safety notes
 

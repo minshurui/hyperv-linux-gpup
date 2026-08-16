@@ -36,6 +36,7 @@ FFmpeg / Emby NVDEC + NVENC
 
 - **通用整内核路线**：适合普通 Debian/Ubuntu 客体，见下方快速流程。
 - **保留厂商内核的外部模块路线**：已在 fnOS `6.18.18.c952-trim` 上验证，避免替换内核导致厂商 RAID/存储初始化缺失。参见 [`docs/FNOS-6.18.md`](docs/FNOS-6.18.md)，使用 `build-dxg-module-6.18.sh`、精确 `Module.symvers` 预检以及可回滚安装脚本。
+- **飞牛影视应用级硬解**：`mediasrv` 0.8.39 的闭源设备发现仍需要进程级适配。源码、参数化构建、systemd 单服务安装/回滚以及真实 NVENC/NVDEC/HLS 验收见 [`docs/FNOS-MOVIES.md`](docs/FNOS-MOVIES.md)。不发布预编译 `.so`，也不做全局 `/dev/dri`、sysfs、CUDA 或 NVENC 能力伪造。
 
 外部模块路线仍是窄版本移植，只接受经哈希验证的 Microsoft tag `linux-msft-wsl-6.6.87.2`（commit `427645e3db3a8896714f22a3d3fe0c3f7b317ad4`），不代表任意 WSL 源码和 Linux 6.18 内核均兼容。完整支持边界与可复现来源记录见 [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md)。
 
@@ -227,6 +228,7 @@ sudo ./scripts/linux/validate-emby-compose.sh /path/to/docker-compose.yml emby
 | `dxgkrnl` MMIO 错误 | GPU-P BAR/MMIO 空间不足 | 开启 GuestControlledCacheTypes，增加高位 MMIO |
 | `nvidia-smi` 找不到驱动 | 只同步了 WSL 通用库 | 同步匹配的 `/usr/lib/wsl/drivers` |
 | 主机可见 GPU、Emby 不可用 | 容器未映射设备和用户态库 | Compose 映射 `/dev/dxg`、WSL 库和 DriverStore |
+| NVENC/NVDEC 命令可用、飞牛影视仍不选 GPU | 闭源 `mediasrv` 期待物理 NVIDIA DRM/PCI 拓扑 | 使用源码公开、仅限进程的发现适配器，并以真实 Movies 转码验收 |
 | rclone `mount not ready` | 旧 VFS 写缓存重放过期上传任务 | 只读媒体挂载、前台监督、旧缓存隔离 |
 
 ## 诊断
